@@ -22,49 +22,37 @@ function GMLTest_Manager() constructor {
 		_gmltest_log_status("RUN", testName);
 		_testCount++;
 		
-		if(test._is_async){
-			// Can't catch asynchronous errors, but can still catch
-			// any syncronous ones at the time the callback is called.
+		// Can't catch asynchronous errors, but can still catch
+		// any syncronous ones at the time the callback is called.
 			
-			/// @description This function must be called by async tests
-			///				 when those tests complete. The test is only 
-			///				 flagged as failed if an error is passed into done().
-			/// @arg [err] Optional error object.
-			var _manager = self;
-			var done = method(
-				{_manager:_manager, _test:test},
-				function(err){
-					if(!is_undefined(err)){
-						_test._passed = false;
-						_manager._handleException(err);
-					}
-					_gmltest_log_status(_manager._get_status_string(_test._passed), _test.get_name());
-					_manager._execute_test_at_index(_test._index+1);
+		/// @description This function must be called by async tests
+		///				 when those tests complete. The test is only 
+		///				 flagged as failed if an error is passed into done().
+		/// @arg [err] Optional error object.
+		var _manager = self;
+		var done = method(
+			{_manager:_manager, _test:test},
+			function(err){
+				if(!is_undefined(err)){
+					_test._passed = false;
+					_manager._handleException(err);
 				}
-			);
-			
-			try {
+				_gmltest_log_status(_manager._get_status_string(_test._passed), _test.get_name());
+				_manager._execute_test_at_index(_test._index+1);
+			}
+		);
+		try {
+			if(test._is_async){
 				test._fn(done);
-			} catch (e){
-				test._passed = false;
-				_handleException(e);
-				_gmltest_log_status( _get_status_string(test._passed), testName);
-				_execute_test_at_index(test._index+1);
 			}
-			
-		}
-		else{
-			try {
+			else{
 				test._fn();
-			} catch (e){
-				test._passed = false;
-				_handleException(e);
+				done();
 			}
-			_gmltest_log_status( _get_status_string(test._passed), testName);
-			_execute_test_at_index(test._index+1);
+		} catch (e){
+			done(e)
 		}
 	}
-	
 
 	///@description Run a fixture test
 	///@param {Struct} test
