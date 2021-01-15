@@ -6,6 +6,9 @@ function GMLTest_Manager() constructor {
 	_testCount = 0;
 	_seed = random_get_seed();
 	
+	_async_test_id = 0;
+	_async_test_status_tracker = [];
+	
 	///@description Get the status string for whether there was a pass or a fail
 	///@param {Bool} passed
 	_get_status_string = function(passed){
@@ -29,6 +32,24 @@ function GMLTest_Manager() constructor {
 		
 		var statusString = _get_status_string(passed);
 		_gmltest_log_status(statusString, testName);
+	}
+	
+	///@description Run a standard async test
+	///@param {Struct} test
+	_run_async_test = function (test){
+		var passed = true;
+		var testName = test.get_name();
+		_gmltest_log_status("RUN", testName);
+		_testCount++;
+		
+		try {
+			test._fn(test._async_test_id);
+		} catch (e){
+			passed = false;
+			_handleException(e);
+			var statusString = _get_status_string(passed);
+			_gmltest_log_status(statusString, testName);
+		}
 	}
 	
 	///@description Run a fixture test
@@ -101,9 +122,15 @@ function GMLTest_Manager() constructor {
 			return;
 		}
 		
-		if (test._harness == noone){
-			_run_test(test);
-		}else if (test._array == noone){
+		if (test._harness == noone){		
+			if (test._is_async){
+				_run_async_test(test);
+			}
+			else{
+				_run_test(test);
+			}
+		}
+		else if (test._array == noone){
 			_run_fixture_test(test);
 		}
 		else {

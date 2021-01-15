@@ -1,5 +1,5 @@
 ///@description Standard test showing basic usage
-test("Basic Standard Test", function(){
+xtest("Basic Standard Test", function(){
 	gmltest_expect_true(true);
 });
 
@@ -8,3 +8,17 @@ test("Basic Standard Test", function(){
 xtest("Basic Disabled Test", function(){
 	gmltest_expect_true(false); 
 });
+
+async_test("Basic Async Test", function(_async_test_id){
+	async_function_example(_async_test_id, function(res){
+		show_debug_message(res);
+		async_test_done(other.callback_id);
+	});
+})
+
+async_test("Basic Async Test 2", function(_async_test_id){
+	async_function_example(_async_test_id, function(res){
+		show_debug_message(res);
+		async_test_done(other.callback_id);
+	});
+})
