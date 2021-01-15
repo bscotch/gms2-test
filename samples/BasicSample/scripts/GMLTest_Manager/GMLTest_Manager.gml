@@ -17,7 +17,6 @@ function GMLTest_Manager() constructor {
 	
 	///@description Run a standard test
 	///@param {Struct} test
-	///@param {number} test_index
 	_run_test = function (test){
 		var testName = test.get_name();
 		_gmltest_log_status("RUN", testName);
@@ -129,7 +128,7 @@ function GMLTest_Manager() constructor {
 	}
 	
 	///@description Execute the provided test struct
-	///@param {Struct} test
+	///@param {Integer} test_index
 	_execute_test_at_index = function (_test_index) {
 		if(_test_index==array_length(_tests)){
 			// Then we have completed all tests
