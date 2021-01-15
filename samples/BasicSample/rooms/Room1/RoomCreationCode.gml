@@ -1,1 +1,1 @@
-gmltest_start();
+gmltest_start(function(){game_end()});

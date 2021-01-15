@@ -10,18 +10,27 @@ xtest("Basic Disabled Test", function(){
 });
 
 ///@description Standard async test showing basic usage with pass result
-async_test("Basic Async Test", function(_done){
+test_async("Basic Async Test 1", function(_done){
 	//We have to pass the _async_test_id to the object's scope to track back through the other. scope
-	var _useId = 13;
 	var callback = method({done: _done}, function(res){show_debug_message(res); done()})
-	
 	async_function_example(callback);
 })
 
-///@description Standard async test showing basic usage with failed result
-async_test("Basic Async Test 2", function(_async_test_id){
-	async_function_example(_async_test_id, function(res){
-		show_debug_message(res);
-		async_test_done(other._async_test_id, false);
-	});
+///@description Standard async test showing basic usage with pass result
+test_async("Basic Async Test 2", function(_done){
+	//We have to pass the _async_test_id to the object's scope to track back through the other. scope
+	var callback = method(
+		{done: _done},
+		function(res){
+			show_debug_message(res);
+			try{
+				show_error("FAKE ERROR",false);
+			}
+			catch(err){
+				done(err);
+			}
+		}
+	);
+	async_function_example(callback);
 })
+

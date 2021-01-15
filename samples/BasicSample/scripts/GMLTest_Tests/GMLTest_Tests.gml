@@ -17,12 +17,14 @@ function GMLTest_Harness() constructor {
 ///@description Test struct used to hold the registered test data for later execution
 function _GMLTest_Test() constructor {
 	_name = "";
+	_fn = undefined;
 	_harness = noone;
-	_fn = noone;
 	_disabled = false;
 	_array = noone;
 	_is_async = false;
 	_async_test_id = -1;
+	_passed = true;
+	_index = -1;
 	
 	function get_name(){
 		var result = "";
@@ -42,8 +44,8 @@ function _GMLTest_Test() constructor {
 function test(name, fn){	
 	_gmltest_create_manager();
 	var temp = new _GMLTest_Test();
-	temp._fn = fn;
 	temp._name = name;
+	temp._fn = fn;
 	global.GMLTestManager.add_test(temp);
 	return temp;
 }
@@ -51,27 +53,16 @@ function test(name, fn){
 ///@description Register a basic async test with a name and a function to execute
 ///@param {String} name The name of the test to be logged to the console
 ///@param {Function} fn The function to be executed
-function async_test(name, fn){
+function test_async(name, fn){
 	_gmltest_create_manager();
 	var temp = new _GMLTest_Test();
-	temp._fn = fn;
 	temp._name = name;
+	temp._fn = fn;
 	temp._is_async = true;
-	temp._async_test_id = global.GMLTestManager._async_test_id;
-	array_push(global.GMLTestManager._async_test_status_tracker, name);			
-	global.GMLTestManager._async_test_id ++;
 	global.GMLTestManager.add_test(temp);
 	return temp;
 }
 
-///@description Marks the async test as completed 
-///@param {Real} async_test_id The async test id to mark
-///@param {Boolean} passed Whether the test passed or failed
-function async_test_done(async_test_id, passed){
-	var testName = global.GMLTestManager._async_test_status_tracker[async_test_id];
-	var statusString = global.GMLTestManager._get_status_string(passed);
-	_gmltest_log_status(statusString, testName);
-}
 
 ///@description Disable a registered basic test that has a name and a function to execute
 ///@param {String} name The name of the test to be logged to the console
