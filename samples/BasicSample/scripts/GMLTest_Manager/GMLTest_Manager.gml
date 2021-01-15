@@ -42,8 +42,12 @@ function GMLTest_Manager() constructor {
 		_gmltest_log_status("RUN", testName);
 		_testCount++;
 		
+		function done(){
+		
+		}
+		
 		try {
-			test._fn(test._async_test_id);
+			test._fn(done);
 		} catch (e){
 			passed = false;
 			_handleException(e);
