@@ -7,12 +7,29 @@ function GMLTest_Manager() constructor {
 	_seed = random_get_seed();
 	_startTime=0;
 	_on_conclude=undefined; // Callback function for when all tests have concluded.
-
+	global.GMLTest_Manager_Context = self;
 	
 	///@description Get the status string for whether there was a pass or a fail
 	///@param {Bool} passed
 	_get_status_string = function(passed){
 		return passed ? "PASSED" : "FAILED";
+	}
+			
+	/// @description Exposes the test's context to allow binding to any callbacks that
+	/// is used by async functions
+	/// @arg {Struct} test
+	 _TestContext = function (test) constructor {
+		done = method(
+			{_test: test},
+			function(err){
+				if(!is_undefined(err)){
+					_test._passed = false;
+					global.GMLTest_Manager_Context._handleException(err);
+				}
+				_gmltest_log_status(global.GMLTest_Manager_Context._get_status_string(_test._passed), _test.get_name());
+				global.GMLTest_Manager_Context._execute_test_at_index(_test._index+1);
+			}
+		);			
 	}
 	
 	///@description Run a standard test
@@ -21,36 +38,17 @@ function GMLTest_Manager() constructor {
 		var testName = test.get_name();
 		_gmltest_log_status("RUN", testName);
 		_testCount++;
-		
-		// Can't catch asynchronous errors, but can still catch
-		// any syncronous ones at the time the callback is called.
-			
-		/// @description This function must be called by async tests
-		///				 when those tests complete. The test is only 
-		///				 flagged as failed if an error is passed into done().
-		/// @arg [err] Optional error object.
-		var _manager = self;
-		var done = method(
-			{_manager:_manager, _test:test},
-			function(err){
-				if(!is_undefined(err)){
-					_test._passed = false;
-					_manager._handleException(err);
-				}
-				_gmltest_log_status(_manager._get_status_string(_test._passed), _test.get_name());
-				_manager._execute_test_at_index(_test._index+1);
-			}
-		);
+		var context = new _TestContext(test);
 		try {
 			if(test._is_async){
-				test._fn(done);
+				test._fn(context.done);
 			}
 			else{
 				test._fn();
-				done();
+				context.done();
 			}
 		} catch (e){
-			done(e)
+			context.done(e)
 		}
 	}
 

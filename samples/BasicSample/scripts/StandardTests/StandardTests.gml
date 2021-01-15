@@ -1,5 +1,5 @@
 ///@description Standard test showing basic usage
-xtest("Basic Standard Test", function(){
+test("Basic Standard Test", function(){
 	gmltest_expect_true(true);
 });
 
