@@ -64,9 +64,12 @@ function async_test(name, fn){
 	return temp;
 }
 
-function async_test_done(async_test_id){
+///@description Marks the async test as completed 
+///@param {Real} async_test_id The async test id to mark
+///@param {Boolean} passed Whether the test passed or failed
+function async_test_done(async_test_id, passed){
 	var testName = global.GMLTestManager._async_test_status_tracker[async_test_id];
-	var statusString = global.GMLTestManager._get_status_string(true);
+	var statusString = global.GMLTestManager._get_status_string(passed);
 	_gmltest_log_status(statusString, testName);
 }
 

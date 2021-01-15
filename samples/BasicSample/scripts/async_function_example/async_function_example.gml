@@ -1,9 +1,10 @@
-// Script assets have changed for v2.3.0 see
-// https://help.yoyogames.com/hc/en-us/articles/360005277377 for more information
-function async_function_example(_callback_id, _callback){
+///@description A mock up async function that allows callback and a way to track the async test id
+///@param {Real} __async_test_id
+///@param {Func} _callback
+function async_function_example(__async_test_id, _callback){
 	var async_handle = instance_create_depth(0,0, 0, o_async_object);
 	with async_handle{
-		callback_id = _callback_id;
+		_async_test_id = __async_test_id;
 		callback = _callback;
 	}
 	return async_handle;
