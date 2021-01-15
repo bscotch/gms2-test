@@ -7,20 +7,19 @@ function GMLTest_Manager() constructor {
 	_seed = random_get_seed();
 	_startTime=0;
 	_on_conclude=undefined; // Callback function for when all tests have concluded.
-	global.GMLTest_Manager_Context = self;
+	global.GMLTest_Manager_Context = self; //Exposes the manager's context to allow calling its functions from anywhere
 	
 	///@description Get the status string for whether there was a pass or a fail
 	///@param {Bool} passed
 	_get_status_string = function(passed){
 		return passed ? "PASSED" : "FAILED";
 	}
-			
-	/// @description Exposes the test's context to allow binding to any callbacks that
-	/// is used by async functions
+	
+	/// @description Mixin function that adds the done function to tests
 	/// @arg {Struct} test
-	 _TestContext = function (test) constructor {
-		done = method(
-			{_test: test},
+	_mixin_done = function (test)  {
+		test.done = method(
+			{_test : test},
 			function(err){
 				if(!is_undefined(err)){
 					_test._passed = false;
@@ -38,17 +37,17 @@ function GMLTest_Manager() constructor {
 		var testName = test.get_name();
 		_gmltest_log_status("RUN", testName);
 		_testCount++;
-		var context = new _TestContext(test);
+		_mixin_done(test);
 		try {
 			if(test._is_async){
-				test._fn(context.done);
+				test._fn(test.done); //_fn is async, so we should pass done as a callback to it
 			}
 			else{
-				test._fn();
-				context.done();
+				test._fn(); //_fn is sync, so we just call done afterwards
+				test.done();
 			}
 		} catch (e){
-			context.done(e)
+			test.done(e) // catches error if _fn's excution failed
 		}
 	}
 
