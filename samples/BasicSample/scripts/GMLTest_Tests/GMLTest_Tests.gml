@@ -19,8 +19,9 @@ function _GMLTest_Test() constructor {
 	_name = "";
 	_fn = undefined;
 	_harness = noone;
+	_harness_instance = noone;
 	_disabled = false;
-	_array = noone;
+	_param = noone;
 	_is_async = false;
 	_passed = true;
 	_index = -1;
@@ -87,24 +88,24 @@ function xtest_f(harness, name, fn){
 ///@description Register a parameterized test with a harness, name, array of parameters, and a function to execute
 ///@param {Struct} harness The struct to use as the harness when the test executes
 ///@param {String} name The name of the test to be logged to the console
-///@param {Array} array An array containing a list of parameters to be executed using the same provided function
+///@param {*} param parameter to pass along to the inner function
 ///@param {Function} fn The function to be executed which takes one parameter
 ///@param {Bool} [is_async] Whether the test is async
-function test_p(harness, name, array, fn) {
+function test_p(harness, name, param, fn) {
 	var _is_async =  argument_count > 4 ? argument[4] : false;
 	var temp = test_f(harness, name, fn, _is_async);
-	temp._array = array;
+	temp._param = param;
 	return temp;
 }
 
 ///@description Disable a registered parameterized test that has a harness, name, array of parameters, and a function to execute
 ///@param {Struct} harness The struct to use as the harness when the test executes
 ///@param {String} name The name of the test to be logged to the console
-///@param {Array} array An array containing a list of parameters to be executed using the same provided function
+///@param {*} param parameter to pass along to the inner function
 ///@param {Function} fn The function to be executed which takes one parameter
 ///@param {Bool} [is_async] Whether the test is async
-function xtest_p(harness, name, array, fn) {
+function xtest_p(harness, name, param, fn) {
 	var _is_async =  argument_count > 4 ? argument[4] : false;
-	var temp = test_p(harness, name, array, fn, _is_async);
+	var temp = test_p(harness, name, param, fn, _is_async);
 	temp._disabled = true;
 }

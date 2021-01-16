@@ -26,7 +26,11 @@ function GMLTest_Manager() constructor {
 					global.GMLTest_Manager_Context._handleException(err);
 				}
 				_gmltest_log_status(global.GMLTest_Manager_Context._get_status_string(_test._passed), _test.get_name());
-				global.GMLTest_Manager_Context._execute_test_at_index(_test._index+1);
+				if(_test._harness_instance != noone){
+					_test._harness_instance.tear_down();
+					delete _test._harness_instance;
+				}
+				global.GMLTest_Manager_Context._execute_test_at_index(_test._index+1);				
 			}
 		);			
 	}
@@ -40,66 +44,38 @@ function GMLTest_Manager() constructor {
 		_mixin_done(test);
 		try {
 			if(test._is_async){
-				test._fn(test.done); //_fn is async, so we should pass done as a callback to it
+				//_fn is async, so we should pass done as a callback to it
+				if test._param  == noone{
+					test._fn(test.done); 
+				}
+				else{
+					test._fn(test._param, test.done);
+				}
 			}
 			else{
-				test._fn(); //_fn is sync, so we just call done afterwards
+				//_fn is sync, so we just call done afterwards
+				if test._param  == noone{
+					test._fn(); 
+				}
+				else{
+					test._fn(test._param);
+				}
 				test.done();
 			}
 		} catch (e){
-			test.done(e) // catches error if _fn's excution failed
+			// catches error if _fn's excution failed
+			test.done(e) 
 		}
 	}
 
 	///@description Run a fixture test
 	///@param {Struct} test
-	_run_fixture_test = function (test){
-		var passed = true;
-		var testName = test.get_name();
-		_gmltest_log_status("RUN", testName);
-		_testCount++;
-		
-		var harness = new test._harness();
-		harness.setup();
-		var fn = method(harness, test._fn);
-		try {
-			fn();
-		} catch (e){
-			passed = false;
-			_handleException(e);
-		}
-		harness.tear_down();
-		delete harness;
-		
-		var statusString = _get_status_string(passed);
-		_gmltest_log_status(statusString, testName);
+	_run_fixture_test = function (test){		
+		test._harness_instance = new test._harness();
+		test._harness_instance.setup();
+		_run_test(test);
 	}
 	
-	///@description Run a parameterized test
-	///@param {Struct} test
-	_run_parameter_test = function (test){
-		for (var i = 0; i < array_length(test._array); i++){
-			var passed = true;
-			var testName = test.get_name() + "::" + string(i);
-			_gmltest_log_status("RUN", testName);
-			_testCount++;
-			
-			var harness = new test._harness();
-			harness.setup();
-			var fn = method(harness, test._fn);
-			try {
-				fn(test._array[i]);
-			} catch (e){
-				passed = false;
-				_handleException(e);
-			}
-			harness.tear_down();
-			delete harness;
-				
-			var statusString = _get_status_string(passed);
-			_gmltest_log_status(statusString, testName);
-		}
-	}
 	
 	///@description Handles any exceptions thrown during the execution of the test
 	///@param {Struct} e
@@ -129,13 +105,8 @@ function GMLTest_Manager() constructor {
 		if (test._harness == noone){		
 			_run_test(test);
 		}
-		else if (test._array == noone){
-			_run_fixture_test(test);
-			_execute_test_at_index(_test_index+1);
-		}
 		else {
-			_run_parameter_test(test);
-			_execute_test_at_index(_test_index+1);
+			_run_fixture_test(test);
 		}
 	}
 	
