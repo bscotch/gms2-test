@@ -44,6 +44,8 @@ Samples can be viewed [here](https://github.com/pmarincak/gms2-test/tree/master/
 #### gmltest_start
 Start running the unit tests
 
+    @param {Function} [on_conclude_callback] Do something once all tests complete.
+
 #### gmltest_set_deterministic
 Sets the seed to a static value or a random value. Can be toggled.
 
@@ -99,17 +101,16 @@ Expects that the provided value is null
 Base struct that all harnesses should extend from
 
     ///@description Called before the execution of the test.
-    ///             Use this function to setup your fixtures and parameterized tests.
-    ///             Only synchronous functions are supported.
-    function setup(){
-    	// Override this function
-    }
+	///             Use this function to setup your fixtures and parameterized tests.
+	setup = function(){
+		// Override this function
+	}
 	
-    ///@description Called after the execution of the test.
-    ///             Use this function to clean up your fixtures and parameterized tests.
-    function tear_down(){
-    	// Override this function
-    }
+	///@description Called after the execution of the test.
+	///             Use this function to clean up your fixtures and parameterized tests.
+	tear_down = function(){
+		// Override this function
+	}
 #### test
 Register a basic test with a name and a function to execute
 
