@@ -23,14 +23,14 @@ test_f(MyFixture, "NotVisibleByDefault", function(){
 });
 
 ///@description Fixture test showing basic usage with async functions
-test_f(MyFixture, "Async Test NotVisibleByDefault", function(_done){
+test_f(MyFixture, "Async Test NameIsHelloByDefault", function(_done){
 	self.done = _done;
 	// In order for the callback function to have access to the variables declared in MyFixture, we need to expose the current context
 	// to it before passing it to the async function
 	var callback = method(self, function(res){
 			show_debug_message(res); 
 			done();
-			gmltest_expect_eq(false, instance.visible);
+			gmltest_expect_eq("hello", instance.name);
 	})
 	async_function_example(callback);
 }, true);

@@ -16,14 +16,17 @@ for (var i = 0; i < array_length(param_array); i++){
 }
 
 ///@description Parameterized test showing async function usage
-test_p(GMLTest_Harness, "Async Parameterized 1", _param, function(p, _done){
+test_p(GMLTest_Harness, "Async IsNumericTest",  "Parameter is passed to the callback", function(p, _done){
 	self.done = _done;
-	var callback = method(self, function(res){show_debug_message(res); done()})
+	var callback = method(self, function(res){
+		gmltest_expect_eq(res, "Parameter is passed to the callback");
+		done();
+	})
 	async_function_example(callback, p);
 }, true);
 
 ///@description Disabled parameterized test showing basic usage
 ///             If this test was run this would cause a failure, but it won't because it is disabled
-xtest_p(GMLTest_Harness, "IsUndefinedTest",_param, function(p){
+xtest_p(GMLTest_Harness, "IsUndefinedTest", 1, function(p){
 	gmltest_expect_eq(undefined, p);
 });
