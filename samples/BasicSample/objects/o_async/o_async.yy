@@ -18,17 +18,17 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":2,"collisionObjectId":null,"parent":{"name":"o_async_object","path":"objects/o_async_object/o_async_object.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
-    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"parent":{"name":"o_async_object","path":"objects/o_async_object/o_async_object.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"isDnD":false,"eventNum":0,"eventType":2,"collisionObjectId":null,"parent":{"name":"o_async","path":"objects/o_async/o_async.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"parent":{"name":"o_async","path":"objects/o_async/o_async.yy",},"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
   ],
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "BasicSample",
-    "path": "BasicSample.yyp",
+    "name": "Supporting Resources",
+    "path": "folders/Supporting Resources.yy",
   },
   "resourceVersion": "1.0",
-  "name": "o_async_object",
+  "name": "o_async",
   "tags": [],
   "resourceType": "GMObject",
 }

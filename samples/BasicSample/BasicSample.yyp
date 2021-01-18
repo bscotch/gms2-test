@@ -1,6 +1,6 @@
 {
   "resources": [
-    {"id":{"name":"async_function_example","path":"scripts/async_function_example/async_function_example.yy",},"order":5,},
+    {"id":{"name":"async_function_example","path":"scripts/async_function_example/async_function_example.yy",},"order":2,},
     {"id":{"name":"StandardTests","path":"scripts/StandardTests/StandardTests.yy",},"order":0,},
     {"id":{"name":"GMLTest_Matchers","path":"scripts/GMLTest_Matchers/GMLTest_Matchers.yy",},"order":2,},
     {"id":{"name":"GMLTest_Tests","path":"scripts/GMLTest_Tests/GMLTest_Tests.yy",},"order":4,},
@@ -9,7 +9,7 @@
     {"id":{"name":"GMLTest_Manager","path":"scripts/GMLTest_Manager/GMLTest_Manager.yy",},"order":1,},
     {"id":{"name":"FixtureTests","path":"scripts/FixtureTests/FixtureTests.yy",},"order":1,},
     {"id":{"name":"GMLTest_Private","path":"scripts/GMLTest_Private/GMLTest_Private.yy",},"order":3,},
-    {"id":{"name":"o_async_object","path":"objects/o_async_object/o_async_object.yy",},"order":11,},
+    {"id":{"name":"o_async","path":"objects/o_async/o_async.yy",},"order":3,},
     {"id":{"name":"MyObject","path":"objects/MyObject/MyObject.yy",},"order":0,},
     {"id":{"name":"Room1","path":"rooms/Room1/Room1.yy",},"order":1,},
   ],

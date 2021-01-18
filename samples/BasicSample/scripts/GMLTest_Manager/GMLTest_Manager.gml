@@ -7,7 +7,6 @@ function GMLTest_Manager() constructor {
 	_seed = random_get_seed();
 	_startTime=0;
 	_on_conclude=undefined; // Callback function for when all tests have concluded.
-	global.GMLTest_Manager_Context = self; //Exposes the manager's context to allow calling its functions from anywhere
 	
 	///@description Get the status string for whether there was a pass or a fail
 	///@param {Bool} passed
@@ -15,33 +14,20 @@ function GMLTest_Manager() constructor {
 		return passed ? "PASSED" : "FAILED";
 	}
 	
-	/// @description Mixin function that adds the done function to tests
-	/// @arg {Struct} test
-	_mixin_done = function (test)  {
-		test.done = method(
-			{_test : test},
-			function(err){
-				if(!is_undefined(err)){
-					_test._passed = false;
-					global.GMLTest_Manager_Context._handleException(err);
-				}
-				_gmltest_log_status(global.GMLTest_Manager_Context._get_status_string(_test._passed), _test.get_name());
-				if(_test._harness_instance != noone){
-					_test._harness_instance.tear_down();
-					delete _test._harness_instance;
-				}
-				global.GMLTest_Manager_Context._execute_test_at_index(_test._index+1);				
-			}
-		);			
-	}
-	
-	///@description Run a standard test
+	///@description Run test
 	///@param {Struct} test
 	_run_test = function (test){
 		var testName = test.get_name();
 		_gmltest_log_status("RUN", testName);
 		_testCount++;
-		_mixin_done(test);
+		
+		if (test._harness != noone){
+			// If harness is set, instantiate it, call setup(), and expose its context to _fn
+			test._harness_instance = new test._harness();
+			test._harness_instance.setup();
+			test._fn = method(test._harness_instance, test._fn);
+		}
+		
 		try {
 			if(test._is_async){
 				//_fn is async, so we should pass done as a callback to it
@@ -49,6 +35,7 @@ function GMLTest_Manager() constructor {
 					test._fn(test.done); 
 				}
 				else{
+					// If param is set, pass param as the first argument
 					test._fn(test._param, test.done);
 				}
 			}
@@ -58,6 +45,7 @@ function GMLTest_Manager() constructor {
 					test._fn(); 
 				}
 				else{
+					// If param is set, pass param as the first argument
 					test._fn(test._param);
 				}
 				test.done();
@@ -66,16 +54,7 @@ function GMLTest_Manager() constructor {
 			// catches error if _fn's excution failed
 			test.done(e) 
 		}
-	}
-
-	///@description Run a fixture test
-	///@param {Struct} test
-	_run_fixture_test = function (test){		
-		test._harness_instance = new test._harness();
-		test._harness_instance.setup();
-		_run_test(test);
-	}
-	
+	}	
 	
 	///@description Handles any exceptions thrown during the execution of the test
 	///@param {Struct} e
@@ -102,12 +81,7 @@ function GMLTest_Manager() constructor {
 			return _execute_test_at_index(_test_index+1);
 		}
 		
-		if (test._harness == noone){		
-			_run_test(test);
-		}
-		else {
-			_run_fixture_test(test);
-		}
+		_run_test(test);
 	}
 	
 	///@description Execute all registered tests
@@ -117,7 +91,6 @@ function GMLTest_Manager() constructor {
 	}
 	
 	///@description Once all tests have passed, failed, or timed out, call this function.
-	///@description This allows for async tests to also be run.
 	_conclude_tests = function() {
 		var endTime = current_time;
 		var timeToRun = endTime - _startTime;

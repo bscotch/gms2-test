@@ -1,15 +1,16 @@
 ///@description Base struct that all harnesses should extend from
+/// setup and tear_down only supports synchronous functions
 function GMLTest_Harness() constructor {
 	
 	///@description Called before the execution of the test.
 	///             Use this function to setup your fixtures and parameterized tests.
-	function setup(){
+	setup = function(){
 		// Override this function
 	}
 	
 	///@description Called after the execution of the test.
 	///             Use this function to clean up your fixtures and parameterized tests.
-	function tear_down(){
+	tear_down = function(){
 		// Override this function
 	}
 }
@@ -26,6 +27,27 @@ function _GMLTest_Test() constructor {
 	_passed = true;
 	_index = -1;
 	
+	/// @description This function signals the conclusion of a test, logs the result, clean up the harness, and starts the next test
+	/// @param {Error} [err] Error that caused the test to fail
+	done = 	function(err){
+		if(!is_undefined(err)){
+			// Log the result as failure and handles the error
+			_passed = false;
+			global.GMLTestManager._handleException(err);
+		}
+		_gmltest_log_status(global.GMLTestManager._get_status_string(_passed), get_name());
+
+		if(_harness_instance != noone){
+			// If any harness is instantiated, call tear_down and delete the instance.
+			_harness_instance.tear_down();
+			delete _harness_instance;
+		}
+				
+		// Execute the next test
+		global.GMLTestManager._execute_test_at_index(_index+1);				
+	}
+	
+	/// @description Returns the name of the test, plus the name of the harness if it has one
 	function get_name(){
 		var result = "";
 		if (_harness != noone){
@@ -85,7 +107,7 @@ function xtest_f(harness, name, fn){
 	temp._disabled = true;
 }
 
-///@description Register a parameterized test with a harness, name, array of parameters, and a function to execute
+///@description Register a parameterized test with a harness, name, parameter, and a function to execute
 ///@param {Struct} harness The struct to use as the harness when the test executes
 ///@param {String} name The name of the test to be logged to the console
 ///@param {*} param parameter to pass along to the inner function
@@ -98,7 +120,7 @@ function test_p(harness, name, param, fn) {
 	return temp;
 }
 
-///@description Disable a registered parameterized test that has a harness, name, array of parameters, and a function to execute
+///@description Disable a registered parameterized test that has a harness, name, parameter, and a function to execute
 ///@param {Struct} harness The struct to use as the harness when the test executes
 ///@param {String} name The name of the test to be logged to the console
 ///@param {*} param parameter to pass along to the inner function
