@@ -100,6 +100,7 @@ Base struct that all harnesses should extend from
 
     ///@description Called before the execution of the test.
     ///             Use this function to setup your fixtures and parameterized tests.
+    ///             Only synchronous functions are supported.
     function setup(){
     	// Override this function
     }
@@ -114,17 +115,20 @@ Register a basic test with a name and a function to execute
 
     @param {String} name The name of the test to be logged to the console
     @param {Function} fn The function to be executed
+    @param {Bool} [is_async] Whether the test is async
 #### xtest
 Disable a registered basic test that has a name and a function to execute
 
     @param {String} name The name of the test to be logged to the console
     @param {Function} fn The function to be executed
+    @param {Bool} [is_async] Whether the test is async
 #### test_f
 Register a fixture test with a harness, name and a function to execute
 
     @param {Struct} harness The struct to use as the harness when the test executes
     @param {String} name The name of the test to be logged to the console
     @param {Function} fn The function to be executed
+    @param {Bool} [is_async] Whether the test is async
 
 #### xtest_f
 Disable a registered fixture test that has a harness, name and a function to execute
@@ -132,22 +136,25 @@ Disable a registered fixture test that has a harness, name and a function to exe
     @param {Struct} harness The struct to use as the harness when the test executes
     @param {String} name The name of the test to be logged to the console
     @param {Function} fn The function to be executed
+    @param {Bool} [is_async] Whether the test is async
 
 #### test_p
-Register a parameterized test with a harness, name, array of parameters, and a function to execute
+Register a parameterized test with a harness, name, parameter, and a function to execute
 
     @param {Struct} harness The struct to use as the harness when the test executes
     @param {String} name The name of the test to be logged to the console
-    @param {Array} array An array containing a list of parameters to be executed using the same provided function
+    @param {*} param parameter to pass along to the inner function
     @param {Function} fn The function to be executed which takes one parameter
+    @param {Bool} [is_async] Whether the test is async
 
 #### xtest_p
 Disable a registered parameterized test that has a harness, name, array of parameters, and a function to execute
 
     @param {Struct} harness The struct to use as the harness when the test executes
     @param {String} name The name of the test to be logged to the console
-    @param {Array} array An array containing a list of parameters to be executed using the same provided function
+    @param {*} param parameter to pass along to the inner function
     @param {Function} fn The function to be executed which takes one parameter
+    @param {Bool} [is_async] Whether the test is async
     
 ## Unit Testing Resources
 The following are a list of resources that can assist you with writing your unit tests. 
