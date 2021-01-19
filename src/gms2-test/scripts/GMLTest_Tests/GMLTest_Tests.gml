@@ -26,6 +26,7 @@ function _GMLTest_Test() constructor {
 	_is_async = false;
 	_passed = true;
 	_index = -1;
+	_err = noone;
 	
 	/// @description This function signals the conclusion of a test, logs the result, clean up the harness, and starts the next test
 	/// @param {Error} [err] Error that caused the test to fail
@@ -33,6 +34,7 @@ function _GMLTest_Test() constructor {
 		if(!is_undefined(err)){
 			// Log the result as failure and handles the error
 			_passed = false;
+			_err= err;
 			global.GMLTestManager._handleException(err);
 		}
 		_gmltest_log_status(global.GMLTestManager._get_status_string(_passed), get_name());
@@ -55,7 +57,7 @@ function _GMLTest_Test() constructor {
 			result = instanceof(temp) + "::";
 			delete temp;
 		}
-		result += _name;
+		result += (_name+"::"+string(_index));
 		return result;
 	}
 }

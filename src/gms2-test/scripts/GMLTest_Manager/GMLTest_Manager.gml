@@ -22,39 +22,46 @@ function GMLTest_Manager() constructor {
 		_testCount++;
 		
 		if (test._harness != noone){
-			// If harness is set, instantiate it, expose its context to _fn, and bind setup and tear_down to the test
+			// If harness is set, instantiate it, call setup(), and expose its context to _fn
 			test._harness_instance = new test._harness();
 			test._fn = method(test._harness_instance, test._fn);
 			test.setup = method(test, test._harness_instance.setup);
 			test.tear_down = method(test, test._harness_instance.tear_down);			
 			test.setup();
 		}
-		
-		try {
-			if(test._is_async){
-				//_fn is async, so we should pass done as a callback to it
-				if test._param  == noone{
-					test._fn(test.done); 
+
+		if (test._disabled){
+			global.GMLTestManager._disabledCount++;
+			_gmltest_log_status("DISABLED", test.get_name());
+			test.done();
+		}
+		else{
+			try {
+				if(test._is_async){
+					//_fn is async, so we should pass done as a callback to it
+					if test._param  == noone{
+						test._fn(test.done); 
+					}
+					else{
+						// If param is set, pass param as the first argument
+						test._fn(test._param, test.done);
+					}			
 				}
 				else{
-					// If param is set, pass param as the first argument
-					test._fn(test._param, test.done);
+					//_fn is sync, so we just call done afterwards
+					if test._param  == noone{
+						test._fn(); 
+					}
+					else{
+						// If param is set, pass param as the first argument
+						test._fn(test._param);
+					}
+					test.done();
 				}
+			} catch (e){
+				// catches error if _fn's excution failed
+				test.done(e) 
 			}
-			else{
-				//_fn is sync, so we just call done afterwards
-				if test._param  == noone{
-					test._fn(); 
-				}
-				else{
-					// If param is set, pass param as the first argument
-					test._fn(test._param);
-				}
-				test.done();
-			}
-		} catch (e){
-			// catches error if _fn's excution failed
-			test.done(e) 
 		}
 	}	
 	
@@ -71,25 +78,23 @@ function GMLTest_Manager() constructor {
 	
 	///@description Execute the provided test struct
 	///@param {Integer} test_index
-	_execute_test_at_index = function (_test_index) {
-		if(_test_index==array_length(_tests)){
+	_execute_test_at_index = function (test_index) {
+		if(test_index==array_length(_tests)){
 			// Then we have completed all tests
 			return _conclude_tests();
 		}
-		var test = _tests[_test_index];
-		if (test._disabled){
-			_disabledCount++;
-			_gmltest_log_status("DISABLED", test.get_name());
-			return _execute_test_at_index(_test_index+1);
-		}
-		
+		var test = _tests[test_index];		
 		_run_test(test);
 	}
 	
 	///@description Execute all registered tests
-	execute = function () {
+	///@param {Integer} [test_index] The test to start on, in case of needing to skip to a particular test
+	execute = function (test_index) {
+		if (is_undefined(test_index)){
+			test_index = 0;
+		}
 		_startTime = current_time;
-		_execute_test_at_index(0);
+		_execute_test_at_index(test_index);
 	}
 	
 	///@description Once all tests have passed, failed, or timed out, call this function.
