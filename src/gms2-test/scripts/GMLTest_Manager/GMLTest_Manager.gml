@@ -24,10 +24,14 @@ function GMLTest_Manager() constructor {
 		if (test._harness != noone){
 			// If harness is set, instantiate it, call setup(), and expose its context to _fn
 			test._harness_instance = new test._harness();
-			test._fn = method(test._harness_instance, test._fn);
+			test._harness_context = test._harness_instance.context;
 			test.setup = method(test, test._harness_instance.setup);
 			test.tear_down = method(test, test._harness_instance.tear_down);			
 			test.setup();
+		}
+		
+		if (test._fn_context != noone){
+			test._fn = method(test._fn_context, test._fn);
 		}
 
 		if (test._disabled){
@@ -38,13 +42,31 @@ function GMLTest_Manager() constructor {
 		else{
 			try {
 				if(test._is_async){
+					if (test._resolution_fn_context != noone){
+						test._resolution_fn = method(test._resolution_fn_context, test._resolution_fn);
+					}										
+					var resolution_and_done;
+					if (test._resolution_fn != noone){
+						resolution_and_done = method(test, function(){
+						    var resolution_array = [];
+							for (var i = 0; i < argument_count; i ++){
+								resolution_array[i] = argument[0];
+							}
+							_resolution_fn(resolution_array);
+						    done();
+						});
+					}
+					else{
+						resolution_and_done = test.done;
+					}
+					
 					//_fn is async, so we should pass done as a callback to it
 					if test._param  == noone{
-						test._fn(test.done); 
+						test._fn(resolution_and_done); 
 					}
 					else{
 						// If param is set, pass param as the first argument
-						test._fn(test._param, test.done);
+						test._fn(test._param, resolution_and_done);
 					}			
 				}
 				else{
