@@ -45,20 +45,15 @@ function GMLTest_Manager() constructor {
 					if (test._resolution_fn_context != noone){
 						test._resolution_fn = method(test._resolution_fn_context, test._resolution_fn);
 					}										
-					var resolution_and_done;
-					if (test._resolution_fn != noone){
-						resolution_and_done = method(test, function(){
+					var resolution_and_done = method(test, function(){
 						    var resolution_array = [];
 							for (var i = 0; i < argument_count; i ++){
 								resolution_array[i] = argument[0];
 							}
 							_resolution_fn(resolution_array);
 						    done();
-						});
-					}
-					else{
-						resolution_and_done = test.done;
-					}
+					});
+					
 					
 					//_fn is async, so we should pass done as a callback to it
 					if test._param  == noone{

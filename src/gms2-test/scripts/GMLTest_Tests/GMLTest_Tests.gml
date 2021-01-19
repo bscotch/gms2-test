@@ -146,16 +146,16 @@ function xtest_p(harness, name, param, fn) {
 ///@description Register a basic async test with a name, a function, and a resolution function to execute
 ///@param {String} name The name of the test to be logged to the console
 ///@param {Function} fn The async function to be executed
-///@param {Function} resolution_fn The function to be executed when the async function resolves
+///@param {Function} [resolution_fn] The function to be executed when the async function resolves
 ///@param {Struct} [fn_context] The context to that the function needs
 ///@param {Struct} [resolution_fn_context] The context to that the resolution function needs
-function test_async(name, fn, resolution_fn){	
+function test_async(name, fn){	
 	_gmltest_create_manager();
 	var temp = new _GMLTest_Test();
 	temp._name = name;
 	temp._fn = fn;
-	temp._resolution_fn = resolution_fn;
 	temp._is_async = true;
+	temp._resolution_fn = argument_count > 2 ? argument[2] : function(){};
 	temp._fn_context =  argument_count > 3 ? argument[3] : noone;
 	temp._resolution_fn_context =  argument_count > 4 ? argument[4] : noone;
 	global.GMLTestManager.add_test(temp);
@@ -165,13 +165,14 @@ function test_async(name, fn, resolution_fn){
 ///@description Disable a registered basic async test
 ///@param {String} name The name of the test to be logged to the console
 ///@param {Function} fn The async function to be executed
-///@param {Function} resolution_fn The function to be executed when the async function resolves
+///@param {Function} [resolution_fn] The function to be executed when the async function resolves
 ///@param {Struct} [fn_context] The context to that the function needs
 ///@param {Struct} [resolution_fn_context] The context to that the resolution function needs
-function xtest_async(name, fn, resolution_fn){	
+function xtest_async(name, fn){
+	var _resolution_fn = argument_count > 2 ? argument[2] : function(){};
 	var _fn_context =  argument_count > 3 ? argument[3] : noone;
 	var _resolution_fn_context =  argument_count > 4 ? argument[4] : noone;
-	var temp = test_async(name, fn, resolution_fn, _fn_context, _resolution_fn_context);
+	var temp = test_async(name, fn, _resolution_fn, _fn_context, _resolution_fn_context);
 	temp._disabled = true;
 	return temp;
 }
@@ -180,13 +181,14 @@ function xtest_async(name, fn, resolution_fn){
 ///@param {Struct} harness The struct to use as the harness when the test executes
 ///@param {String} name The name of the test to be logged to the console
 ///@param {Function} fn The async function to be executed
-///@param {Function} resolution_fn The function to be executed when the async function resolves
+///@param {Function} [resolution_fn] The function to be executed when the async function resolves
 ///@param {Struct} [fn_context] The context to that the function needs
 ///@param {Struct} [resolution_fn_context] The context to that the resolution function needs
-function test_f_async(harness, name, fn, resolution_fn){
+function test_f_async(harness, name, fn){
+	var _resolution_fn = argument_count > 3 ? argument[3] : function(){};
 	var _fn_context =  argument_count > 4 ? argument[4] : noone;
 	var _resolution_fn_context =  argument_count > 5 ? argument[5] : noone;
-	var temp = test_async(name, fn, resolution_fn, _fn_context, _resolution_fn_context);
+	var temp = test_async(name, fn, _resolution_fn, _fn_context, _resolution_fn_context);
 	temp._harness = harness;
 	return temp;
 }
@@ -195,13 +197,14 @@ function test_f_async(harness, name, fn, resolution_fn){
 ///@param {Struct} harness The struct to use as the harness when the test executes
 ///@param {String} name The name of the test to be logged to the console
 ///@param {Function} fn The async function to be executed
-///@param {Function} resolution_fn The function to be executed when the async function resolves
+///@param {Function} [resolution_fn] The function to be executed when the async function resolves
 ///@param {Struct} [fn_context] The context to that the function needs
 ///@param {Struct} [resolution_fn_context] The context to that the resolution function needs
-function xtest_f_async(harness, name, fn, resolution_fn){
+function xtest_f_async(harness, name, fn){
+	var _resolution_fn = argument_count > 3 ? argument[3] : function(){};
 	var _fn_context =  argument_count > 4 ? argument[4] : noone;
 	var _resolution_fn_context =  argument_count > 5 ? argument[5] : noone;
-	var temp = test_f_async(harness, name, fn, resolution_fn, _fn_context, _resolution_fn_context);
+	var temp = test_f_async(harness, name, fn, _resolution_fn, _fn_context, _resolution_fn_context);
 	temp._disabled = true;
 	return temp;
 }
@@ -211,13 +214,14 @@ function xtest_f_async(harness, name, fn, resolution_fn){
 ///@param {String} name The name of the test to be logged to the console
 ///@param {*} param parameter to pass along to the inner function
 ///@param {Function} fn The async function to be executed
-///@param {Function} resolution_fn The function to be executed when the async function resolves
+///@param {Function} [resolution_fn] The function to be executed when the async function resolves
 ///@param {Struct} [fn_context] The context to that the function needs
 ///@param {Struct} [resolution_fn_context] The context to that the resolution function needs
-function test_p_async(harness, name, param, fn, resolution_fn) {
+function test_p_async(harness, name, param, fn) {	
+	var _resolution_fn = argument_count > 4 ? argument[4] : function(){};
 	var _fn_context =  argument_count > 5 ? argument[5] : noone;
 	var _resolution_fn_context =  argument_count > 6 ? argument[6] : noone;
-	var temp = test_f_async(harness, name, fn, resolution_fn,  _fn_context, _resolution_fn_context);
+	var temp = test_f_async(harness, name, fn, _resolution_fn,  _fn_context, _resolution_fn_context);
 	temp._param = param;
 	return temp;
 }
@@ -227,13 +231,14 @@ function test_p_async(harness, name, param, fn, resolution_fn) {
 ///@param {String} name The name of the test to be logged to the console
 ///@param {*} param parameter to pass along to the inner function
 ///@param {Function} fn The async function to be executed
-///@param {Function} resolution_fn The function to be executed when the async function resolves
+///@param {Function} [resolution_fn] The function to be executed when the async function resolves
 ///@param {Struct} [fn_context] The context to that the function needs
 ///@param {Struct} [resolution_fn_context] The context to that the resolution function needs
-function xtest_p_async(harness, name, param, fn, resolution_fn) {
+function xtest_p_async(harness, name, param, fn) {
+	var _resolution_fn = argument_count > 4 ? argument[4] : function(){};
 	var _fn_context =  argument_count > 5 ? argument[5] : noone;
 	var _resolution_fn_context =  argument_count > 6 ? argument[6] : noone;
-	var temp = test_p_async(harness, name, param, fn, resolution_fn,  _fn_context, _resolution_fn_context);
+	var temp = test_p_async(harness, name, param, fn, _resolution_fn,  _fn_context, _resolution_fn_context);
 	temp._disabled = true;
 	return temp;
 }
